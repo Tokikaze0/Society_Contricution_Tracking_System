@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() { return request.auth != null; }
+    function userPath() { return "/databases/" + database + "/documents/users/" + request.auth.uid; }
+    function hasUserDoc() { return isSignedIn() && exists(userPath()); }
+    function userRole() { return hasUserDoc() ? get(userPath()).data.role : null; }
+    function userHomeroom() { return hasUserDoc() ? get(userPath()).data.homeroom : null; }
+    function userStudentId() { return hasUserDoc() ? get(userPath()).data.studentId : null; }
+    function isAdmin() { return userRole() == 'admin'; }
+    function isTreasurer() { return userRole() == 'treasurer'; }
+
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      // Only admins can create/update user profiles
+      allow write: if isAdmin();
+    }
+
+    match /contributions/{contributionId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /payments/{paymentId} {
+      allow read: if isSignedIn() && (
+        isAdmin() || isTreasurer() || (userStudentId() == resource.data.studentId)
+      );
+      allow create: if isSignedIn() && (
+        isAdmin() || (isTreasurer() && request.resource.data.homeroom == userHomeroom())
+      );
+      allow update, delete: if isSignedIn() && (
+        isAdmin() || (isTreasurer() && resource.data.homeroom == userHomeroom())
+      );
+    }
+  }
+}

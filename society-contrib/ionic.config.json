@@ -1,0 +1,7 @@
+{
+  "name": "society-contrib",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
