@@ -1,0 +1,7 @@
+{
+  "name": "scts",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
