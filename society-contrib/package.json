@@ -1,9 +1,0 @@
-{
-  "dependencies": {
-    "@angular/core": "^20.3.3",
-    "firebase": "^12.3.0"
-  },
-  "devDependencies": {
-    "@angular-devkit/build-angular": "^20.3.4"
-  }
-}
