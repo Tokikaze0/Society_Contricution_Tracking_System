@@ -1,0 +1,79 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Admin Dashboard</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Create Contribution</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form [formGroup]="form" (ngSubmit)="createContribution()">
+        <ion-item><ion-input label="Title" formControlName="title"></ion-input></ion-item>
+        <ion-item><ion-input label="Amount" type="number" formControlName="amount"></ion-input></ion-item>
+        <ion-item><ion-input label="Description" formControlName="description"></ion-input></ion-item>
+        <ion-item><ion-datetime-button datetime="due"></ion-datetime-button></ion-item>
+        <ion-modal [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime id="due" formControlName="dueDate"></ion-datetime>
+          </ng-template>
+        </ion-modal>
+        <ion-button type="submit" expand="block">Create</ion-button>
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Contributions</ion-card-title>
+    </ion-card-header>
+    <ion-list>
+      <ion-item *ngFor="let c of (contributions$ | async)">
+        <ion-label>
+          <h2>{{ c.title }} - {{ c.amount | currency }}</h2>
+          <p>Overall: {{ c.status || 'pending' }}</p>
+        </ion-label>
+        <ion-button color="danger" (click)="deleteContribution(c.id)">Delete</ion-button>
+      </ion-item>
+    </ion-list>
+    <ion-list>
+      <ion-item *ngFor="let c of (contributions$ | async)">
+        <ion-label>Set Homeroom Status for {{ c.title }}</ion-label>
+        <ion-input placeholder="Homeroom (e.g., G10-A)" [(ngModel)]="statusInputs[c.id].homeroom"></ion-input>
+        <ion-select interface="popover" placeholder="Status" [(ngModel)]="statusInputs[c.id].status">
+          <ion-select-option value="pending">Pending</ion-select-option>
+          <ion-select-option value="ready">Ready to Collect</ion-select-option>
+          <ion-select-option value="completed">Completed</ion-select-option>
+        </ion-select>
+        <ion-button (click)="applyHomeroomStatus(c.id)">Update</ion-button>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Pending Approvals</ion-card-title>
+    </ion-card-header>
+    <ion-list>
+      <ion-item *ngFor="let p of (approvals$ | async)">
+        <ion-label>
+          <h2>{{ p.studentId }} - {{ p.contributionId }}</h2>
+          <p>Status: {{ p.status }}</p>
+        </ion-label>
+        <ion-button color="success" (click)="approvePayment(p)">Approve</ion-button>
+        <ion-button color="danger" (click)="rejectPayment(p)">Reject</ion-button>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Export Financial Summary</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-button (click)="exportFinancialSummary()" expand="block">Export CSV</ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
