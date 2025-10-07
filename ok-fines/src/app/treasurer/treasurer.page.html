@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Treasurer Panel</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Submit Paid Students</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form [formGroup]="form" (ngSubmit)="submitList()">
+        <ion-item>
+          <ion-select label="Contribution" formControlName="contributionId">
+            <ion-select-option *ngFor="let c of (contributions$ | async)" [value]="c.id">
+              {{ c.title }} ({{ c.amount | currency }})
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-input label="Homeroom" formControlName="homeroom"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-textarea label="Student IDs (comma or space separated)" formControlName="studentIds"></ion-textarea>
+        </ion-item>
+        <ion-item>
+          <ion-input label="Amount (optional)" type="number" formControlName="amount"></ion-input>
+        </ion-item>
+        <ion-button type="submit" expand="block">Submit</ion-button>
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
